@@ -12,6 +12,7 @@ variable "tfstate_arn" { default = "" }
 variable "tfstate_key_vpc" { default = "demo/vpc/terraform.tfstate" }
 
 variable "in_public" { default = false }
+variable "lb_enable" { default = true }
 variable "source_security_group_tags" { default = {} }
 variable "lb_tg_name" {
   description = "The name of the target group will be mapped"

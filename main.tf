@@ -29,7 +29,7 @@ data "aws_security_groups" "ec2" {
 }
 
 data "aws_lb_target_group" "ec2" {
-  count = "${length(var.target_group_arns) > 0 ? 0 : 1}"
+  count = "${length(var.target_group_arns) == 0 && var.lb_enable ? 1 : 0}"
   name  = "${var.lb_tg_name}"
 }
 
@@ -39,7 +39,8 @@ locals {
   subnets           = [ "${split(",", length(var.vpc_zone_identifier) == 0 ? join(",", local.dynamic_subnets) : join(",", var.vpc_zone_identifier))}" ]
   tags              = "${concat(var.tags,list(map("key","Env", "value","${var.project_env}", "propagate_at_launch",true)))}"
   key_name          = "${var.key_name == "" ? data.terraform_remote_state.vpc.key_name : var.key_name }"
-  target_group_arns = [ "${split(",", length(var.target_group_arns) == 0 ? join(",", data.aws_lb_target_group.ec2.*.arn) : join(",", var.target_group_arns))}" ]
+  tg_arns           = [ "${split(",", length(var.target_group_arns) == 0 ? join(",", flatten(data.aws_lb_target_group.ec2.*.arn)) : join(",", var.target_group_arns))}" ]
+  target_group_arns = [ "${split(",", var.lb_enable ? join(",", local.tg_arns) : join(",", list("")) )" ]
 }
 
 module "asg" {
