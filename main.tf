@@ -40,7 +40,7 @@ locals {
   tags              = "${concat(var.tags,list(map("key","Env", "value","${var.project_env}", "propagate_at_launch",true)))}"
   key_name          = "${var.key_name == "" ? data.terraform_remote_state.vpc.key_name : var.key_name }"
   tg_arns           = [ "${split(",", length(var.target_group_arns) == 0 ? join(",", flatten(data.aws_lb_target_group.ec2.*.arn)) : join(",", var.target_group_arns))}" ]
-  target_group_arns = [ "${split(",", var.lb_enable ? join(",", local.tg_arns) : join(",", list("")) )" ]
+  target_group_arns = [ "${split(",", var.lb_enable ? join(",", local.tg_arns) : join(",", list("")) )}" ]
 }
 
 module "asg" {
